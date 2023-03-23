@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="Sayemum Hassan" />
+    <meta name="date" content="03/23/2023" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <title>➕🕹🎲</title>
+    <style>
+      #plus-container {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        justify-content: center;
+        align-content: center;
+        justify-items: center;
+        align-items: center;
+      }
+      #south {
+        grid-row: 3;
+        grid-column: 2;
+      }
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+      }
+      .correctness {
+        display: none;
+      }
+      .current-outcome {
+        display: inline;
+      }
+
+      input {
+        font-size: 2rem;
+        width: 4rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="plus-container">
+      <button id="check">✅</button>
+      <input type="number" name="north" id="north" class="entry" tabindex="1" autofocus/>
+      <div id="result">
+        <span class="correctness" id="correct">👍</span>
+        <span class="correctness" id="incorrect">🤙</span>
+      </div>
+      <input type="number" name="west" id="west" class="entry" tabindex="4" />
+      <div id="goal"></div>
+      <input type="number" name="east" id="east" class="entry" tabindex="2" />
+      <input type="number" name="south" id="south" class="entry" tabindex="3" />
+    </div>
+    <script>
+      const checkButton = document.getElementById("check");
+      checkButton.onclick = checkAnswers;
+
+      const northElem = document.getElementById('north');
+      const eastElem = document.getElementById('east');
+      const westElem = document.getElementById('west');
+      const southElem = document.getElementById('south');
+
+      // As soon as the user modified an input, clear the thumb.
+      northElem.oninput = clearThumb;
+      eastElem.oninput = clearThumb;
+      westElem.oninput = clearThumb;
+      southElem.oninput = clearThumb;
+
+      function checkAnswers(ev) {
+        console.info("clicked check button!", ev);
+        // If player's answers are correct,
+            // Show the correct thumbs up
+        // Else
+            // Show the incorrect thumbs down
+        // Start new match after 3 seconds
+
+        const goalElem = document.getElementById('goal');
+        const answer = parseInt(northElem.value,10) + parseInt(eastElem.value,10) + parseInt(westElem.value,10) + parseInt(southElem.value,10);
+
+        console.log("Answer: " + answer);
+        console.log("Goal: " + goalElem.innerText);
+
+        if (answer == parseInt(goalElem.innerText,10)) {
+            console.log("Current Answer is CORRECT!");
+            const correctnessId = document.getElementById('correct');
+            correctnessId.classList.toggle('current-outcome');
+
+        } else {
+            console.log("Current Answer is INCORRECT!");
+            const correctnessId = document.getElementById('incorrect');
+            correctnessId.classList.toggle('current-outcome');
+        }
+
+        const cancelId = setTimeout(function() {
+            console.log('3sec elapsed, start the next round');
+            startNewRound();
+        }, 3000);
+        };
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+      function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+      }
+
+      function startNewRound() { 
+        // 1. clear everything
+        //  erase the input guesses (nums in adjacent boxes)
+        //  clearThumb
+        clearThumb();
+
+        // get a reference to each of the elements with a class of "entry"
+        const entryElements = document.querySelectorAll(".entry");
+        // debugger;
+        // clear them somehow
+        console.log("entryElems", entryElements);
+
+        for (let index = 0; index < entryElements.length; index++) {
+            const element = entryElements[index];
+            element.value = "";
+        }
+        // entryElements[0].value = "";
+        console.log("entryElems", entryElements);
+
+        // 2. generate new goal
+        let currentGoal = 3 + getRandomInt(13);
+        console.log(currentGoal);
+        
+        // 3. put the goal in the dom
+        // 3a. get a reference to the dom element where goal should be displayed
+        const goalElem = document.getElementById('goal');
+        console.log(goalElem);
+        goalElem.innerText = currentGoal;
+        console.log(goal);
+        // console.log(document.getElementById('goal').innerText);
+      }
+      // As soon as the user modifies an input, clear the thumb.
+      function clearThumb() { 
+        console.debug("clearThumb Activated");
+        // 1. get the relevant dom element(s)
+        const allThumbs = document.querySelectorAll('.correctness');
+        for (let i = 0; i < allThumbs.length; i++) {
+            const element = allThumbs[i];
+            element.className = 'correctness';
+        }
+      }
+
+      startNewRound();
+
+    </script>
+  </body>
+</html>
